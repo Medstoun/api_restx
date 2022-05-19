@@ -11,9 +11,9 @@ db = SQLAlchemy(app)
 api = Api(app)
 api.app.config['RESTX_JSON'] = {'ensure_ascii': False, 'indent': 4}
 
-movies_ns = api.namespaces('movies')
-director_ns = api.namespaces('directors')
-genre_ns = api.namespaces('genres')
+movies_ns = api.namespace('movies')
+director_ns = api.namespace('directors')
+genre_ns = api.namespace('genres')
 
 
 class Movie(db.Model):
@@ -64,7 +64,7 @@ class GenreSchema(Schema):
 
 
 @movies_ns.route('/')
-class MovieView:
+class MovieView(Resource):
     def get(self):
         director_id = request.args.get('director_id')
         genre_id = request.args.get('genre_id')
@@ -89,7 +89,7 @@ class MovieView:
 
 
 @movies_ns.route('/<int:mid>')
-class MovieView:
+class MovieView(Resource):
     def get(self, mid):
         movie = Movie.query.get(mid)
         return MoviesSchema().dump(movie), 200
@@ -117,5 +117,4 @@ class MovieView:
         db.session.close()
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+app.run()
