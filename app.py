@@ -91,8 +91,11 @@ class MovieView(Resource):
 @movies_ns.route('/<int:mid>')
 class MovieView(Resource):
     def get(self, mid):
-        movie = Movie.query.get(mid)
-        return MoviesSchema().dump(movie), 200
+        try:
+            movie = Movie.query.get(mid)
+            return MoviesSchema().dump(movie), 200
+        except Exception as ex:
+            return ex, 404
 
     def put(self, mid):
         data = request.get_json()
@@ -109,12 +112,16 @@ class MovieView(Resource):
         db.session.commit()
         db.session.close()
 
+        return '', 200
+
     def delete(self, mid):
         movie = Movie.query.get(mid)
 
         db.session.delete(movie)
         db.session.commit()
         db.session.close()
+
+        return '', 200
 
 
 app.run()
